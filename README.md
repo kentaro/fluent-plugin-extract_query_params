@@ -34,7 +34,7 @@ Then you'll get re-emmited tag/record-s below:
 "extracted.test" => {
   "url" => "http://example.com/?foo=bar&baz=qux&hoge=fuga"
   "foo" => "bar",
-  "baz" => "quex"
+  "baz" => "qux"
 }
 ```
 
