@@ -34,8 +34,9 @@ module Fluent
 
     def emit(tag, es, chain)
       es.each do |time, record|
-        filter_record(tag, time, record)
-        Engine.emit(tag, time, record)
+        t = tag.dup
+        filter_record(t, time, record)
+        Engine.emit(t, time, record)
       end
 
       chain.next
@@ -45,15 +46,17 @@ module Fluent
       if record[key]
         begin
           url = URI.parse(record[key])
-          url.query.split('&').each do |pair|
-            key, value = pair.split('=').map { |i| URI.unescape(i) }
+          unless url.query.nil?
+            url.query.split('&').each do |pair|
+              key, value = pair.split('=').map { |i| URI.unescape(i) }
 
-            if only
-              record[key] = value if @include_keys.has_key?(key)
-            elsif except
-              record[key] = value if !@exclude_keys.has_key?(key)
-            else
-              record[key] = value
+              if only
+                record[key] = value if @include_keys.has_key?(key)
+              elsif except
+                record[key] = value if !@exclude_keys.has_key?(key)
+              else
+                record[key] = value
+              end
             end
           end
         rescue URI::InvalidURIError => error
