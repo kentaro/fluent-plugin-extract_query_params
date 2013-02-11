@@ -102,6 +102,29 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     assert_equal 'qux',            emits[0][2]['baz']
   end
 
+  def test_emit_multi
+    d = create_driver(%[
+      key            url
+      add_tag_prefix extracted.
+      only           foo, baz
+    ])
+    d.run do
+      d.emit('url' => URL)
+      d.emit('url' => URL)
+      d.emit('url' => URL)
+    end
+    emits = d.emits
+
+    assert_equal 3, emits.count
+
+    emits.each do |e|
+      assert_equal 'extracted.test', e[0]
+      assert_equal URL,              e[2]['url']
+      assert_equal 'bar',            e[2]['foo']
+      assert_equal 'qux',            e[2]['baz']
+    end
+  end
+
   def test_emit_without_match_key
     d = create_driver(%[
       key            no_such_key
