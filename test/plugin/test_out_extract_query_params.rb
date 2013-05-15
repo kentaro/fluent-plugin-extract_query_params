@@ -86,6 +86,24 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     assert_nil record['モリス']
   end
 
+  def test_filter_record_with_discard
+    d = create_driver(%[
+      key            url
+      add_tag_prefix extracted.
+      discard_key true
+    ])
+
+    tag    = 'test'
+    record = { 'url' => URL }
+    d.instance.filter_record('test', Time.now, record)
+
+    assert_nil               record['nil']
+    assert_nil               record['url']
+    assert_equal 'bar',      record['foo']
+    assert_equal 'qux',      record['baz']
+    assert_equal 'すたじお', record['モリス']
+  end
+
   def test_emit
     d = create_driver(%[
       key            url

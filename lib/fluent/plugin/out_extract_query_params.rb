@@ -9,6 +9,7 @@ module Fluent
     config_param :key,    :string
     config_param :only,   :string, :default => nil
     config_param :except, :string, :default => nil
+    config_param :discard_key, :bool, :default => false
 
     def configure(conf)
       super
@@ -59,6 +60,7 @@ module Fluent
               end
             end
           end
+          record.delete key if discard_key
         rescue URI::InvalidURIError => error
           $log.warn("out_extract_query_params: #{error.message}")
         end
