@@ -60,6 +60,10 @@ If set, only the key/value whose key is included `only` will be added to the rec
 
 If set, the key/value whose key is included `except` will NOT be added to the record.
 
+### discard_key
+
+If set to `true`, the original `key` url will be discarded from the record. Defaults to `false` (preserve key).
+
 ## Installation
 
 Add this line to your application's Gemfile:
