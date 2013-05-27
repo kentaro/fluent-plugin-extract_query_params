@@ -10,6 +10,7 @@ module Fluent
     config_param :only,   :string, :default => nil
     config_param :except, :string, :default => nil
     config_param :discard_key, :bool, :default => false
+    config_param :add_field_prefix, :string, :default => nil
 
     def configure(conf)
       super
@@ -51,6 +52,7 @@ module Fluent
             url.query.split('&').each do |pair|
               key, value = pair.split('=').map { |i| URI.unescape(i) }
 
+              key = @add_field_prefix + key if @add_field_prefix
               if only
                 record[key] = value if @include_keys.has_key?(key)
               elsif except
