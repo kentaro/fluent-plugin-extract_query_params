@@ -52,6 +52,28 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     assert_equal 'すたじお', record['モリス']
   end
 
+  def test_filter_record_with_field_prefix
+    d = create_driver(%[
+      key            url
+      add_field_prefix query_
+      add_tag_prefix extracted.
+    ])
+
+    tag    = 'test'
+    record = {
+      'url' => URL,
+    }
+    d.instance.filter_record('test', Time.now, record)
+
+    assert_equal URL,       record['url']
+    assert_nil record['foo']
+    assert_nil record['baz']
+    assert_nil record['モリス']
+    assert_equal 'bar',     record['query_foo']
+    assert_equal 'qux',     record['query_baz']
+    assert_equal 'すたじお', record['query_モリス']
+  end
+
   def test_filter_record_with_only
     d = create_driver(%[
       key            url
