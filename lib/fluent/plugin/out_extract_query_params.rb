@@ -11,6 +11,7 @@ module Fluent
     config_param :except, :string, :default => nil
     config_param :discard_key, :bool, :default => false
     config_param :add_field_prefix, :string, :default => nil
+    config_param :permit_blank_key, :bool, :default => false
 
     def configure(conf)
       super
@@ -51,6 +52,9 @@ module Fluent
           unless url.query.nil?
             url.query.split('&').each do |pair|
               key, value = pair.split('=').map { |i| URI.unescape(i) }
+              next if (key.nil? || key.empty?) && (!@permit_blank_key || value.nil? || value.empty?)
+              key ||= ''
+              value ||= ''
 
               key = @add_field_prefix + key if @add_field_prefix
               if only
