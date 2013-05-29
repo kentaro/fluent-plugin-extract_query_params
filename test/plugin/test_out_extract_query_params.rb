@@ -191,4 +191,111 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     assert_equal 'extracted.test', emits[0][0]
     assert_equal 'invalid url',    emits[0][2]['url']
   end
+
+  DIRTY_PATH_BLANK_1 = '/dummy?&baz=qux'
+  DIRTY_PATH_BLANK_2 = '/dummy?foo=bar&'
+  DIRTY_PATH_BLANK_3 = '/dummy?foo=bar&&baz=qux'
+  DIRTY_PATH_BLANK_4 = '/dummy?=&baz=qux'
+  DIRTY_PATH_KEY_ONLY_1 = '/dummy?foo=&baz=qux'
+  DIRTY_PATH_KEY_ONLY_2 = '/dummy?foo&baz=qux'
+  DIRTY_PATH_KEY_ONLY_3 = '/dummy?baz=qux&foo'
+  DIRTY_PATH_VALUE_ONLY_1 = '/dummy?=bar&baz=qux'
+  DIRTY_PATH_VALUE_ONLY_2 = '/dummy?baz=qux&=bar'
+
+  def test_emit_with_dirty_paths
+    d = create_driver(%[
+      key            path
+      add_tag_prefix a.
+    ])
+    d.run {
+      d.emit({ 'path' => DIRTY_PATH_BLANK_1 })
+      d.emit({ 'path' => DIRTY_PATH_BLANK_2 })
+      d.emit({ 'path' => DIRTY_PATH_BLANK_3 })
+      d.emit({ 'path' => DIRTY_PATH_BLANK_4 })
+      d.emit({ 'path' => DIRTY_PATH_KEY_ONLY_1 })
+      d.emit({ 'path' => DIRTY_PATH_KEY_ONLY_2 })
+      d.emit({ 'path' => DIRTY_PATH_KEY_ONLY_3 })
+      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_1 })
+      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_2 })
+    }
+    emits = d.emits
+
+    assert_equal 9, emits.count
+
+    r = emits.shift[2]
+    assert_equal 2, r.size
+    assert_equal DIRTY_PATH_BLANK_1, r['path']
+    assert_equal 'qux',              r['baz']
+
+    r = emits.shift[2]
+    assert_equal 2, r.size
+    assert_equal DIRTY_PATH_BLANK_2, r['path']
+    assert_equal 'bar',              r['foo']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_BLANK_3, r['path']
+    assert_equal 'bar',              r['foo']
+    assert_equal 'qux',              r['baz']
+
+    r = emits.shift[2]
+    assert_equal 2, r.size
+    assert_equal DIRTY_PATH_BLANK_4, r['path']
+    assert_equal 'qux',              r['baz']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_KEY_ONLY_1, r['path']
+    assert_equal '',                    r['foo']
+    assert_equal 'qux',                 r['baz']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_KEY_ONLY_2, r['path']
+    assert_equal '',                    r['foo']
+    assert_equal 'qux',                 r['baz']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_KEY_ONLY_3, r['path']
+    assert_equal '',                    r['foo']
+    assert_equal 'qux',                 r['baz']
+
+    r = emits.shift[2]
+    assert_equal 2, r.size
+    assert_equal DIRTY_PATH_VALUE_ONLY_1, r['path']
+    assert_equal 'qux',                   r['baz']
+
+    r = emits.shift[2]
+    assert_equal 2, r.size
+    assert_equal DIRTY_PATH_VALUE_ONLY_2, r['path']
+    assert_equal 'qux',                   r['baz']
+  end
+
+  def test_emit_with_permit_blank_key
+    d = create_driver(%[
+      key              path
+      add_tag_prefix   a.
+      permit_blank_key yes
+    ])
+    d.run {
+      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_1 })
+      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_2 })
+    }
+    emits = d.emits
+
+    assert_equal 2, emits.count
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_VALUE_ONLY_1, r['path']
+    assert_equal 'bar',                   r['']
+    assert_equal 'qux',                   r['baz']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_VALUE_ONLY_2, r['path']
+    assert_equal 'bar',                   r['']
+    assert_equal 'qux',                   r['baz']
+  end
 end
