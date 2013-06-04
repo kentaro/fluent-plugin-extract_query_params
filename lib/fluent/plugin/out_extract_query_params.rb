@@ -13,6 +13,11 @@ module Fluent
     config_param :add_field_prefix, :string, :default => nil
     config_param :permit_blank_key, :bool, :default => false
 
+    def initialize
+      super
+      require 'webrick'
+    end
+
     def configure(conf)
       super
 
@@ -48,7 +53,11 @@ module Fluent
     def filter_record(tag, time, record)
       if record[key]
         begin
-          url = URI.parse(record[key])
+          url = begin
+                  URI.parse(record[key])
+                rescue URI::InvalidURIError => e
+                  URI.parse(WEBrick::HTTPUtils.escape(record[key]))
+                end
           unless url.query.nil?
             url.query.split('&').each do |pair|
               key, value = pair.split('=').map { |i| URI.unescape(i) }

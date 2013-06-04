@@ -298,4 +298,31 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     assert_equal 'bar',                   r['']
     assert_equal 'qux',                   r['baz']
   end
+
+  def test_raw_multibyte_chars
+    d = create_driver(%[
+      key              path
+      add_tag_prefix   a.
+      permit_blank_key yes
+    ])
+
+    raw_multibytes_src = '/path/to/ほげぽす/x?a=b'
+
+    d.run {
+      d.emit({ 'path' => raw_multibytes_src.dup.encode('sjis').force_encoding('ascii-8bit') })
+      d.emit({ 'path' => raw_multibytes_src.dup.encode('eucjp').force_encoding('ascii-8bit') })
+    }
+    emits = d.emits
+
+    # nothing raised is correct
+    assert_equal 2, emits.count
+
+    r = emits.shift[2]
+    assert_equal 2, r.size
+    assert_equal 'b', r['a']
+
+    r = emits.shift[2]
+    assert_equal 2, r.size
+    assert_equal 'b', r['a']
+  end
 end
