@@ -54,11 +54,9 @@ module Fluent
       if record[key]
         begin
           url = begin
-                  # URI.parse(record[key])
                   URI.parse(URI.encode(record[key].strip))
                 rescue URI::InvalidURIError => e
                   URI.parse(WEBrick::HTTPUtils.escape(record[key].strip))
-                  # URI.parse(URI.encode(record[key].strip))
                 end
           unless url.query.nil?
             url.query.split('&').each do |pair|
