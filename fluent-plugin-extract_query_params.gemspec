@@ -1,11 +1,12 @@
 Gem::Specification.new do |gem|
   gem.name          = 'fluent-plugin-extract_query_params'
-  gem.version       = '0.0.6'
+  gem.version       = '0.0.7'
   gem.authors       = ['Kentaro Kuribayashi']
   gem.email         = ['kentarok@gmail.com']
   gem.homepage      = 'http://github.com/kentaro/fluent-plugin-extract_query_params'
   gem.description   = %q{Fluentd plugin to extract key/values from URL query parameters.}
   gem.summary       = %q{Fluentd plugin to extract key/values from URL query parameters}
+  gem.license       = 'MIT'
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
@@ -15,3 +16,4 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake'
   gem.add_runtime_dependency     'fluentd'
 end
+
