@@ -13,10 +13,10 @@ module Fluent
     config_param :add_field_prefix, :string, :default => nil
     config_param :permit_blank_key, :bool, :default => false
 
-    config_param :discard_url_scheme, :bool, :default => true
-    config_param :discard_url_host, :bool, :default => true
-    config_param :discard_url_port, :bool, :default => true
-    config_param :discard_url_path, :bool, :default => true
+    config_param :add_url_scheme, :bool, :default => false
+    config_param :add_url_host, :bool, :default => false
+    config_param :add_url_port, :bool, :default => false
+    config_param :add_url_path, :bool, :default => false
 
     def initialize
       super
@@ -64,25 +64,25 @@ module Fluent
                   URI.parse(WEBrick::HTTPUtils.escape(record[key]))
                 end
 
-          unless @discard_url_scheme
+          if @add_url_scheme
             url_scheme_key = 'url_scheme'
             url_scheme_key = @add_field_prefix + url_scheme_key if @add_field_prefix
             record[url_scheme_key] = url.scheme || ''
           end
 
-          unless @discard_url_host
+          if @add_url_host
             url_host_key = 'url_host'
             url_host_key = @add_field_prefix + url_host_key if @add_field_prefix
             record[url_host_key] = url.host || ''
           end
 
-          unless @discard_url_port
+          if @add_url_port
             url_port_key = 'url_port'
             url_port_key = @add_field_prefix + url_port_key if @add_field_prefix
             record[url_port_key] = url.port || ''
           end
 
-          unless @discard_url_path
+          if @add_url_path
             url_path_key = 'url_path'
             url_path_key = @add_field_prefix + url_path_key if @add_field_prefix
             record[url_path_key] = url.path || ''

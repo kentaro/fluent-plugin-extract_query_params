@@ -332,10 +332,10 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       key            url
       add_tag_prefix extracted.
 
-      discard_url_scheme false
-      discard_url_host false
-      discard_url_port false
-      discard_url_path false
+      add_url_scheme true
+      add_url_host true
+      add_url_port true
+      add_url_path true
     ])
     tag    = 'test'
     record = {
@@ -359,10 +359,10 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_field_prefix query_
       add_tag_prefix extracted.
 
-      discard_url_scheme false
-      discard_url_host false
-      discard_url_port false
-      discard_url_path false
+      add_url_scheme true
+      add_url_host true
+      add_url_port true
+      add_url_path true
     ])
 
     tag    = 'test'
@@ -389,10 +389,10 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       key            url
       add_tag_prefix extracted.
 
-      discard_url_scheme false
-      discard_url_host false
-      discard_url_port false
-      discard_url_path false
+      add_url_scheme true
+      add_url_host true
+      add_url_port true
+      add_url_path true
     ])
     tag    = 'test'
     record = {
