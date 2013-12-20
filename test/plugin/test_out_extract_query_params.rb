@@ -3,7 +3,8 @@
 require 'test_helper'
 
 class ExtractQueryParamsOutputTest < Test::Unit::TestCase
-  URL = 'http://example.com/?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
+  URL = 'http://example.com:80/?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
+  QUERY_ONLY = '?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
 
   def setup
     Fluent::Test.setup
@@ -324,5 +325,88 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     r = emits.shift[2]
     assert_equal 2, r.size
     assert_equal 'b', r['a']
+  end
+
+  def test_filter_record_with_url_scheme_host_port_path
+    d = create_driver(%[
+      key            url
+      add_tag_prefix extracted.
+
+      add_url_scheme true
+      add_url_host true
+      add_url_port true
+      add_url_path true
+    ])
+    tag    = 'test'
+    record = {
+      'url' => URL,
+    }
+    d.instance.filter_record('test', Time.now, record)
+
+    assert_equal URL,       record['url']
+    assert_equal 'bar',     record['foo']
+    assert_equal 'qux',     record['baz']
+    assert_equal 'すたじお', record['モリス']
+    assert_equal 'http',     record['url_scheme']
+    assert_equal 'example.com', record['url_host']
+    assert_equal 80,     record['url_port']
+    assert_equal '/',     record['url_path']
+  end
+
+  def test_filter_record_with_field_prefix_and_url_scheme_host_port_path
+    d = create_driver(%[
+      key            url
+      add_field_prefix query_
+      add_tag_prefix extracted.
+
+      add_url_scheme true
+      add_url_host true
+      add_url_port true
+      add_url_path true
+    ])
+
+    tag    = 'test'
+    record = {
+      'url' => URL,
+    }
+    d.instance.filter_record('test', Time.now, record)
+
+    assert_equal URL,       record['url']
+    assert_nil record['foo']
+    assert_nil record['baz']
+    assert_nil record['モリス']
+    assert_equal 'bar',     record['query_foo']
+    assert_equal 'qux',     record['query_baz']
+    assert_equal 'すたじお', record['query_モリス']
+    assert_equal 'http',     record['query_url_scheme']
+    assert_equal 'example.com', record['query_url_host']
+    assert_equal 80,     record['query_url_port']
+    assert_equal '/',     record['query_url_path']
+  end
+
+  def test_filter_record_from_query_only_url_with_url_scheme_host_port_path
+    d = create_driver(%[
+      key            url
+      add_tag_prefix extracted.
+
+      add_url_scheme true
+      add_url_host true
+      add_url_port true
+      add_url_path true
+    ])
+    tag    = 'test'
+    record = {
+      'url' => QUERY_ONLY,
+    }
+    d.instance.filter_record('test', Time.now, record)
+
+    assert_equal QUERY_ONLY, record['url']
+    assert_equal 'bar',     record['foo']
+    assert_equal 'qux',     record['baz']
+    assert_equal 'すたじお', record['モリス']
+    assert_equal '', record['url_scheme']
+    assert_equal '', record['url_host']
+    assert_equal '', record['url_port']
+    assert_equal '', record['url_path']
   end
 end

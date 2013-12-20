@@ -64,6 +64,22 @@ If set, the key/value whose key is included `except` will NOT be added to the re
 
 If set to `true`, the original `key` url will be discarded from the record. Defaults to `false` (preserve key).
 
+### add_url_scheme
+
+If set to `true`, scheme (use `url_scheme` key) will be added to the record. Defaults to `false`.
+
+### add_url_host
+
+If set to `true`, host (use `url_host` key) will be added to the record. Defaults to `false`.
+
+### add_url_port
+
+If set to `true`, port (use `url_port` key) will be added to the record. Defaults to `false`.
+
+### add_url_path
+
+If set to `true`, path (use `url_path` key) will be added to the record. Defaults to `false`.
+
 ## Installation
 
 Add this line to your application's Gemfile:
