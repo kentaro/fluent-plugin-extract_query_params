@@ -1,4 +1,4 @@
-# fluent-plugin-extract_query_params
+# fluent-plugin-extract_query_params, a plugin for [Fluentd](http://fluentd.org)
 
 ## Component
 
