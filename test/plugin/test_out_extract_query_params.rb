@@ -226,7 +226,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       d.emit({ 'path' => DIRTY_PATH_BASE64_2 })
       d.emit({ 'path' => DIRTY_PATH_BASE64_3 })
       d.emit({ 'path' => DIRTY_PATH_BASE64_4 })
-
     }
     emits = d.emits
 
