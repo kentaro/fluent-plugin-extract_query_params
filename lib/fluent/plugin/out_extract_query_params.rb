@@ -59,9 +59,9 @@ module Fluent
       if record[key]
         begin
           url = begin
-                  URI.parse(URI.encode(record[key].strip))
+                  URI.parse(record[key])
                 rescue URI::InvalidURIError => e
-                  URI.parse(WEBrick::HTTPUtils.escape(record[key].strip))
+                  URI.parse(WEBrick::HTTPUtils.escape(record[key]))
                 end
 
           if @add_url_scheme
