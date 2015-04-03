@@ -202,6 +202,10 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
   DIRTY_PATH_KEY_ONLY_3 = '/dummy?baz=qux&foo'
   DIRTY_PATH_VALUE_ONLY_1 = '/dummy?=bar&baz=qux'
   DIRTY_PATH_VALUE_ONLY_2 = '/dummy?baz=qux&=bar'
+  DIRTY_PATH_BASE64_1 = '/dummy?foo=ZXh0cmE=&baz=qux'
+  DIRTY_PATH_BASE64_2 = '/dummy?baz=qux&foo=ZXh0cmE='
+  DIRTY_PATH_BASE64_3 = '/dummy?foo=cGFkZGluZw==&baz=qux'
+  DIRTY_PATH_BASE64_4 = '/dummy?baz=qux&foo=cGFkZGluZw=='
 
   def test_emit_with_dirty_paths
     d = create_driver(%[
@@ -218,10 +222,14 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       d.emit({ 'path' => DIRTY_PATH_KEY_ONLY_3 })
       d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_1 })
       d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_2 })
+      d.emit({ 'path' => DIRTY_PATH_BASE64_1 })
+      d.emit({ 'path' => DIRTY_PATH_BASE64_2 })
+      d.emit({ 'path' => DIRTY_PATH_BASE64_3 })
+      d.emit({ 'path' => DIRTY_PATH_BASE64_4 })
     }
     emits = d.emits
 
-    assert_equal 9, emits.count
+    assert_equal 13, emits.count
 
     r = emits.shift[2]
     assert_equal 2, r.size
@@ -271,6 +279,30 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     assert_equal 2, r.size
     assert_equal DIRTY_PATH_VALUE_ONLY_2, r['path']
     assert_equal 'qux',                   r['baz']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_BASE64_1, r['path']
+    assert_equal 'qux',               r['baz']
+    assert_equal 'ZXh0cmE=',          r['foo']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_BASE64_2, r['path']
+    assert_equal 'qux',               r['baz']
+    assert_equal 'ZXh0cmE=',          r['foo']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_BASE64_3, r['path']
+    assert_equal 'qux',               r['baz']
+    assert_equal 'cGFkZGluZw==',      r['foo']
+
+    r = emits.shift[2]
+    assert_equal 3, r.size
+    assert_equal DIRTY_PATH_BASE64_4, r['path']
+    assert_equal 'qux',               r['baz']
+    assert_equal 'cGFkZGluZw==',      r['foo']
   end
 
   def test_emit_with_permit_blank_key
