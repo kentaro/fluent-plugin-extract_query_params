@@ -8,10 +8,6 @@ rvm:
 gemfile:
  - Gemfile
 
-branches:
-  only:
-    - master
-
 script: bundle exec rake test
 
 matrix:
