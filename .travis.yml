@@ -1,0 +1,19 @@
+language: ruby
+
+rvm:
+  - 2.1
+  - 2.2
+  - rbx
+
+gemfile:
+ - Gemfile
+
+branches:
+  only:
+    - master
+
+script: bundle exec rake test
+
+matrix:
+  allow_failures:
+    - rvm: rbx
