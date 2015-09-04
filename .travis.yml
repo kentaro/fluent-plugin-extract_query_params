@@ -8,7 +8,7 @@ rvm:
 gemfile:
  - Gemfile
 
-script: bundle exec rake test
+script: bundle exec rake test TESTOPTS="-v"
 
 matrix:
   allow_failures:
