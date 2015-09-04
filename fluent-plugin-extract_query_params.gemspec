@@ -13,6 +13,10 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
+  if defined?(RUBY_VERSION) && RUBY_VERSION > '2.2'
+    gem.add_development_dependency "test-unit", '~> 3'
+  end
+
   gem.add_development_dependency 'rake'
   gem.add_runtime_dependency     'fluentd'
 end
