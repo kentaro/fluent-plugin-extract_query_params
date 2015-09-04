@@ -1,4 +1,5 @@
 require 'uri'
+require 'cgi/util'
 
 module Fluent
   class ExtractQueryParamsOutput < Output
@@ -90,7 +91,7 @@ module Fluent
 
           unless url.query.nil?
             url.query.split('&').each do |pair|
-              key, value = pair.split('=', 2).map { |i| URI.unescape(i) }
+              key, value = pair.split('=', 2).map { |i| CGI.unescape(i) }
               next if (key.nil? || key.empty?) && (!@permit_blank_key || value.nil? || value.empty?)
               key ||= ''
               value ||= ''

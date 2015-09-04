@@ -1,0 +1,15 @@
+language: ruby
+
+rvm:
+  - 2.1
+  - 2.2
+  - rbx
+
+gemfile:
+ - Gemfile
+
+script: bundle exec rake test TESTOPTS="-v"
+
+matrix:
+  allow_failures:
+    - rvm: rbx
