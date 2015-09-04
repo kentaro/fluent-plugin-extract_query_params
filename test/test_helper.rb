@@ -16,6 +16,7 @@ unless ENV.has_key?('VERBOSE')
 end
 
 require 'fluent/plugin/out_extract_query_params'
+require 'fluent/plugin/filter_extract_query_params'
 
 class Test::Unit::TestCase
 end
