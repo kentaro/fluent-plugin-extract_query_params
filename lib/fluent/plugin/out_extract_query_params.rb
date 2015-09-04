@@ -6,6 +6,11 @@ module Fluent
 
     Fluent::Plugin.register_output('extract_query_params', self)
 
+    # To support Fluentd v0.10.57 or earlier
+    unless method_defined?(:router)
+      define_method("router") { Fluent::Engine }
+    end
+
     config_param :key,    :string
     config_param :only,   :string, :default => nil
     config_param :except, :string, :default => nil
