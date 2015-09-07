@@ -3,13 +3,9 @@ language: ruby
 rvm:
   - 2.1
   - 2.2
-  - rbx
 
 gemfile:
- - Gemfile
+  - gemfiles/fluentd_0.10.gemfile
+  - gemfiles/fluentd_0.12.gemfile
 
-script: bundle exec rake test TESTOPTS="-v"
-
-matrix:
-  allow_failures:
-    - rvm: rbx
+script: bundle exec rake test
