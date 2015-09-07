@@ -1,13 +1,7 @@
 module Fluent
-  class ExtractQueryParamsOutput < Output
-    include Fluent::HandleTagNameMixin
+  class ExtractQueryParamsFilter < Filter
 
-    Fluent::Plugin.register_output('extract_query_params', self)
-
-    # To support Fluentd v0.10.57 or earlier
-    unless method_defined?(:router)
-      define_method("router") { Fluent::Engine }
-    end
+    Fluent::Plugin.register_filter('extract_query_params', self)
 
     config_param :key,    :string
     config_param :only,   :string, :default => nil
@@ -22,8 +16,8 @@ module Fluent
     config_param :add_url_path, :bool, :default => false
 
     def initialize
-      require 'fluent/plugin/query_params_extractor'
       super
+      require 'fluent/plugin/query_params_extractor'
     end
 
     def configure(conf)
@@ -31,19 +25,8 @@ module Fluent
       @extractor = QueryParamsExtractor.new(self, conf)
     end
 
-    def filter_record(tag, time, record)
-      record = @extractor.add_query_params_field(record)
-      super(tag, time, record)
-    end
-
-    def emit(tag, es, chain)
-      es.each do |time, record|
-        t = tag.dup
-        filter_record(t, time, record)
-        router.emit(t, time, record)
-      end
-
-      chain.next
+    def filter(tag, time, record)
+      @extractor.add_query_params_field(record)
     end
   end
 end
