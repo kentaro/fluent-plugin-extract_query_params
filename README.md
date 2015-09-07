@@ -1,4 +1,4 @@
-# fluent-plugin-extract_query_params, a plugin for [Fluentd](http://fluentd.org)
+# fluent-plugin-extract_query_params, a plugin for [Fluentd](http://fluentd.org) [![](https://travis-ci.org/kentaro/fluent-plugin-extract_query_params.svg)](https://travis-ci.org/kentaro/fluent-plugin-extract_query_params)
 
 ## Component
 
