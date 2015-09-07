@@ -16,7 +16,10 @@ unless ENV.has_key?('VERBOSE')
 end
 
 require 'fluent/plugin/out_extract_query_params'
-require 'fluent/plugin/filter_extract_query_params'
+
+if Gem::Version.new(Fluent::VERSION) > Gem::Version.new('0.12')
+  require 'fluent/plugin/filter_extract_query_params'
+end
 
 class Test::Unit::TestCase
 end

@@ -1,5 +1,6 @@
 require 'test_helper'
 
+if Gem::Version.new(Fluent::VERSION) > Gem::Version.new('0.12')
 class ExtractQueryParamsFilterTest < Test::Unit::TestCase
   URL = 'http://example.com:80/?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
   QUERY_ONLY = '?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
@@ -327,4 +328,5 @@ class ExtractQueryParamsFilterTest < Test::Unit::TestCase
     filtered = filter(config, [record])
     assert_equal(expected, filtered[0])
   end
+end
 end
