@@ -10,8 +10,22 @@ Fluentd plugin to extract key/values from URL query parameters.
 
 Imagin you have a config as below:
 
+fluentd `< 0.12`:
+
 ```
 <match test.**>
+  type extract_query_params
+
+  key            url
+  add_tag_prefix extracted.
+  only           foo, baz
+</match>
+```
+
+fluentd `>= 0.12`:
+
+```
+<filter test.**>
   type extract_query_params
 
   key            url
