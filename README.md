@@ -29,7 +29,6 @@ fluentd `>= 0.12`:
   type extract_query_params
 
   key            url
-  add_tag_prefix extracted.
   only           foo, baz
 </match>
 ```
