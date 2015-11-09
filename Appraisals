@@ -3,5 +3,5 @@ appraise 'fluentd-0.10' do
 end
 
 appraise 'fluentd-0.12' do
-  gem 'rails', '~> 0.12.0'
+  gem 'fluentd', '~> 0.12.0'
 end
