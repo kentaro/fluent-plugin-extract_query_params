@@ -8,4 +8,5 @@ gemfile:
   - gemfiles/fluentd_0.10.gemfile
   - gemfiles/fluentd_0.12.gemfile
 
+before_script: gem update bundler
 script: bundle exec rake test
