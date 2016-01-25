@@ -14,7 +14,7 @@ fluentd `< 0.12`:
 
 ```
 <match test.**>
-  type extract_query_params
+  @type extract_query_params
 
   key            url
   add_tag_prefix extracted.
@@ -26,7 +26,7 @@ fluentd `>= 0.12`:
 
 ```
 <filter test.**>
-  type extract_query_params
+  @type extract_query_params
 
   key            url
   only           foo, baz
