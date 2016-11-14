@@ -1,15 +1,10 @@
-module Fluent
-  class ExtractQueryParamsFilter < Filter
+require "fluent/plugin/filter"
+require "fluent/plugin/query_params_extractor"
+
+module Fluent::Plugin
+  class ExtractQueryParamsFilter < Fluent::Plugin::Filter
 
     Fluent::Plugin.register_filter('extract_query_params', self)
-
-    # For fluentd v0.12.16 or earlier
-    class << self
-      unless method_defined?(:desc)
-        def desc(description)
-        end
-      end
-    end
 
     desc "point a key whose value contains URL string."
     config_param :key,    :string
@@ -33,14 +28,9 @@ module Fluent
     desc "If set to true, path (use url_path key) will be added to the record."
     config_param :add_url_path, :bool, default: false
 
-    def initialize
-      super
-      require 'fluent/plugin/query_params_extractor'
-    end
-
     def configure(conf)
       super
-      @extractor = QueryParamsExtractor.new(self, conf)
+      @extractor = Fluent::Plugin::QueryParamsExtractor.new(self, conf)
     end
 
     def filter(tag, time, record)

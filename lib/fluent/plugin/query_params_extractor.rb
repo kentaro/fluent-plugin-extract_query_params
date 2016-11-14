@@ -2,7 +2,7 @@ require 'uri'
 require 'cgi/util'
 require 'webrick'
 
-module Fluent
+module Fluent::Plugin
   class QueryParamsExtractor
 
     attr_reader :log
@@ -10,9 +10,9 @@ module Fluent
     def initialize(plugin, conf)
       @log = plugin.log
 
-      if plugin.is_a?(Fluent::Output)
+      if plugin.is_a?(Fluent::Plugin::Output)
         unless have_tag_option?(plugin)
-          raise ConfigError, "out_extract_query_params: At least one of remove_tag_prefix/remove_tag_suffix/add_tag_prefix/add_tag_suffix is required to be set."
+          raise Fluent::ConfigError, "out_extract_query_params: At least one of remove_tag_prefix/remove_tag_suffix/add_tag_prefix/add_tag_suffix is required to be set."
         end
       end
 

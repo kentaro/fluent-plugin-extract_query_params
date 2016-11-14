@@ -1,9 +1,13 @@
-module Fluent
-  class ExtractQueryParamsOutput < Output
+require "fluent/plugin/output"
+require "fluent/plugin/query_params_extractor"
+
+module Fluent::Plugin
+  class ExtractQueryParamsOutput < Fluent::Plugin::Output
     include Fluent::HandleTagNameMixin
 
     Fluent::Plugin.register_output('extract_query_params', self)
 
+    helpers :event_emitter
 
     desc "point a key whose value contains URL string."
     config_param :key,    :string
@@ -27,14 +31,9 @@ module Fluent
     desc "If set to true, path (use url_path key) will be added to the record."
     config_param :add_url_path, :bool, default: false
 
-    def initialize
-      require 'fluent/plugin/query_params_extractor'
-      super
-    end
-
     def configure(conf)
       super
-      @extractor = QueryParamsExtractor.new(self, conf)
+      @extractor = Fluent::Plugin::QueryParamsExtractor.new(self, conf)
     end
 
     def filter_record(tag, time, record)
@@ -42,14 +41,12 @@ module Fluent
       super(tag, time, record)
     end
 
-    def emit(tag, es, chain)
+    def process(tag, es)
       es.each do |time, record|
         t = tag.dup
         filter_record(t, time, record)
         router.emit(t, time, record)
       end
-
-      chain.next
     end
   end
 end

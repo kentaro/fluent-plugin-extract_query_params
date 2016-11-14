@@ -1,6 +1,5 @@
-# -*- encoding: utf-8 -*-
-
 require 'test_helper'
+require 'fluent/plugin/out_extract_query_params'
 
 class ExtractQueryParamsOutputTest < Test::Unit::TestCase
   URL = 'http://example.com:80/?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
@@ -10,9 +9,9 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
     Fluent::Test.setup
   end
 
-  def create_driver(conf, tag = 'test')
-    Fluent::Test::OutputTestDriver.new(
-      Fluent::ExtractQueryParamsOutput, tag
+  def create_driver(conf)
+    Fluent::Test::Driver::Output.new(
+      Fluent::Plugin::ExtractQueryParamsOutput
     ).configure(conf)
   end
 
@@ -133,14 +132,14 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_tag_prefix extracted.
       only           foo, baz
     ])
-    d.run { d.emit('url' => URL) }
-    emits = d.emits
+    d.run(default_tag: "test") { d.feed('url' => URL) }
+    events = d.events
 
-    assert_equal 1, emits.count
-    assert_equal 'extracted.test', emits[0][0]
-    assert_equal URL,              emits[0][2]['url']
-    assert_equal 'bar',            emits[0][2]['foo']
-    assert_equal 'qux',            emits[0][2]['baz']
+    assert_equal 1, events.count
+    assert_equal 'extracted.test', events[0][0]
+    assert_equal URL,              events[0][2]['url']
+    assert_equal 'bar',            events[0][2]['foo']
+    assert_equal 'qux',            events[0][2]['baz']
   end
 
   def test_emit_multi
@@ -149,16 +148,16 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_tag_prefix extracted.
       only           foo, baz
     ])
-    d.run do
-      d.emit('url' => URL)
-      d.emit('url' => URL)
-      d.emit('url' => URL)
+    d.run(default_tag: "test") do
+      d.feed('url' => URL)
+      d.feed('url' => URL)
+      d.feed('url' => URL)
     end
-    emits = d.emits
+    events = d.events
 
-    assert_equal 3, emits.count
+    assert_equal 3, events.count
 
-    emits.each do |e|
+    events.each do |e|
       assert_equal 'extracted.test', e[0]
       assert_equal URL,              e[2]['url']
       assert_equal 'bar',            e[2]['foo']
@@ -172,12 +171,12 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_tag_prefix extracted.
       only           foo, baz
     ])
-    d.run { d.emit('url' => URL) }
-    emits = d.emits
+    d.run(default_tag: "test") { d.feed('url' => URL) }
+    events = d.events
 
-    assert_equal 1, emits.count
-    assert_equal 'extracted.test', emits[0][0]
-    assert_equal URL,              emits[0][2]['url']
+    assert_equal 1, events.count
+    assert_equal 'extracted.test', events[0][0]
+    assert_equal URL,              events[0][2]['url']
   end
 
   def test_emit_with_invalid_url
@@ -185,12 +184,12 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       key            url
       add_tag_prefix extracted.
     ])
-    d.run { d.emit('url' => 'invalid url') }
-    emits = d.emits
+    d.run(default_tag: "test") { d.feed('url' => 'invalid url') }
+    events = d.events
 
-    assert_equal 1, emits.count
-    assert_equal 'extracted.test', emits[0][0]
-    assert_equal 'invalid url',    emits[0][2]['url']
+    assert_equal 1, events.count
+    assert_equal 'extracted.test', events[0][0]
+    assert_equal 'invalid url',    events[0][2]['url']
   end
 
   DIRTY_PATH_BLANK_1 = '/dummy?&baz=qux'
@@ -212,93 +211,93 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       key            path
       add_tag_prefix a.
     ])
-    d.run {
-      d.emit({ 'path' => DIRTY_PATH_BLANK_1 })
-      d.emit({ 'path' => DIRTY_PATH_BLANK_2 })
-      d.emit({ 'path' => DIRTY_PATH_BLANK_3 })
-      d.emit({ 'path' => DIRTY_PATH_BLANK_4 })
-      d.emit({ 'path' => DIRTY_PATH_KEY_ONLY_1 })
-      d.emit({ 'path' => DIRTY_PATH_KEY_ONLY_2 })
-      d.emit({ 'path' => DIRTY_PATH_KEY_ONLY_3 })
-      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_1 })
-      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_2 })
-      d.emit({ 'path' => DIRTY_PATH_BASE64_1 })
-      d.emit({ 'path' => DIRTY_PATH_BASE64_2 })
-      d.emit({ 'path' => DIRTY_PATH_BASE64_3 })
-      d.emit({ 'path' => DIRTY_PATH_BASE64_4 })
+    d.run(default_tag: "test") {
+      d.feed({ 'path' => DIRTY_PATH_BLANK_1 })
+      d.feed({ 'path' => DIRTY_PATH_BLANK_2 })
+      d.feed({ 'path' => DIRTY_PATH_BLANK_3 })
+      d.feed({ 'path' => DIRTY_PATH_BLANK_4 })
+      d.feed({ 'path' => DIRTY_PATH_KEY_ONLY_1 })
+      d.feed({ 'path' => DIRTY_PATH_KEY_ONLY_2 })
+      d.feed({ 'path' => DIRTY_PATH_KEY_ONLY_3 })
+      d.feed({ 'path' => DIRTY_PATH_VALUE_ONLY_1 })
+      d.feed({ 'path' => DIRTY_PATH_VALUE_ONLY_2 })
+      d.feed({ 'path' => DIRTY_PATH_BASE64_1 })
+      d.feed({ 'path' => DIRTY_PATH_BASE64_2 })
+      d.feed({ 'path' => DIRTY_PATH_BASE64_3 })
+      d.feed({ 'path' => DIRTY_PATH_BASE64_4 })
     }
-    emits = d.emits
+    events = d.events
 
-    assert_equal 13, emits.count
+    assert_equal 13, events.count
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 2, r.size
     assert_equal DIRTY_PATH_BLANK_1, r['path']
     assert_equal 'qux',              r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 2, r.size
     assert_equal DIRTY_PATH_BLANK_2, r['path']
     assert_equal 'bar',              r['foo']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_BLANK_3, r['path']
     assert_equal 'bar',              r['foo']
     assert_equal 'qux',              r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 2, r.size
     assert_equal DIRTY_PATH_BLANK_4, r['path']
     assert_equal 'qux',              r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_KEY_ONLY_1, r['path']
     assert_equal '',                    r['foo']
     assert_equal 'qux',                 r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_KEY_ONLY_2, r['path']
     assert_equal '',                    r['foo']
     assert_equal 'qux',                 r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_KEY_ONLY_3, r['path']
     assert_equal '',                    r['foo']
     assert_equal 'qux',                 r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 2, r.size
     assert_equal DIRTY_PATH_VALUE_ONLY_1, r['path']
     assert_equal 'qux',                   r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 2, r.size
     assert_equal DIRTY_PATH_VALUE_ONLY_2, r['path']
     assert_equal 'qux',                   r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_BASE64_1, r['path']
     assert_equal 'qux',               r['baz']
     assert_equal 'ZXh0cmE=',          r['foo']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_BASE64_2, r['path']
     assert_equal 'qux',               r['baz']
     assert_equal 'ZXh0cmE=',          r['foo']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_BASE64_3, r['path']
     assert_equal 'qux',               r['baz']
     assert_equal 'cGFkZGluZw==',      r['foo']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_BASE64_4, r['path']
     assert_equal 'qux',               r['baz']
@@ -311,21 +310,21 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_tag_prefix   a.
       permit_blank_key yes
     ])
-    d.run {
-      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_1 })
-      d.emit({ 'path' => DIRTY_PATH_VALUE_ONLY_2 })
+    d.run(default_tag: "test") {
+      d.feed({ 'path' => DIRTY_PATH_VALUE_ONLY_1 })
+      d.feed({ 'path' => DIRTY_PATH_VALUE_ONLY_2 })
     }
-    emits = d.emits
+    events = d.events
 
-    assert_equal 2, emits.count
+    assert_equal 2, events.count
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_VALUE_ONLY_1, r['path']
     assert_equal 'bar',                   r['']
     assert_equal 'qux',                   r['baz']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 3, r.size
     assert_equal DIRTY_PATH_VALUE_ONLY_2, r['path']
     assert_equal 'bar',                   r['']
@@ -341,20 +340,20 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
 
     raw_multibytes_src = '/path/to/ほげぽす/x?a=b'
 
-    d.run {
-      d.emit({ 'path' => raw_multibytes_src.dup.encode('sjis').force_encoding('ascii-8bit') })
-      d.emit({ 'path' => raw_multibytes_src.dup.encode('eucjp').force_encoding('ascii-8bit') })
+    d.run(default_tag: "test") {
+      d.feed({ 'path' => raw_multibytes_src.dup.encode('sjis').force_encoding('ascii-8bit') })
+      d.feed({ 'path' => raw_multibytes_src.dup.encode('eucjp').force_encoding('ascii-8bit') })
     }
-    emits = d.emits
+    events = d.events
 
     # nothing raised is correct
-    assert_equal 2, emits.count
+    assert_equal 2, events.count
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 2, r.size
     assert_equal 'b', r['a']
 
-    r = emits.shift[2]
+    r = events.shift[2]
     assert_equal 2, r.size
     assert_equal 'b', r['a']
   end
