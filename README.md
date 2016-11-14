@@ -6,23 +6,14 @@
 
 Fluentd plugin to extract key/values from URL query parameters.
 
+## Caveat
+
+This plugin, from version 0.1.0, supports fluentd of version v0.14 or higher.
+If you want to use this plugin with fluentd v0.12 or earlier, choose 0.0.x versions.
+
 ## Synopsis
 
 Imagin you have a config as below:
-
-fluentd `< 0.12`:
-
-```
-<match test.**>
-  @type extract_query_params
-
-  key            url
-  add_tag_prefix extracted.
-  only           foo, baz
-</match>
-```
-
-fluentd `>= 0.12`:
 
 ```
 <filter test.**>
