@@ -1,6 +1,6 @@
 require 'test_helper'
+require 'fluent/plugin/filter_extract_query_params'
 
-if Gem::Version.new(Fluent::VERSION) > Gem::Version.new('0.12')
 class ExtractQueryParamsFilterTest < Test::Unit::TestCase
   URL = 'http://example.com:80/?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
   QUERY_ONLY = '?foo=bar&baz=qux&%E3%83%A2%E3%83%AA%E3%82%B9=%E3%81%99%E3%81%9F%E3%81%98%E3%81%8A'
@@ -10,21 +10,20 @@ class ExtractQueryParamsFilterTest < Test::Unit::TestCase
     @time = Fluent::Engine.now
   end
 
-  def create_driver(conf, tag = 'test')
-    Fluent::Test::FilterTestDriver.new(
-      Fluent::ExtractQueryParamsFilter, tag
+  def create_driver(conf)
+    Fluent::Test::Driver::Filter.new(
+      Fluent::Plugin::ExtractQueryParamsFilter
     ).configure(conf)
   end
 
   def filter(config, messages)
-    d = create_driver(config, 'test')
-    d.run {
+    d = create_driver(config)
+    d.run(default_tag: "test") {
       messages.each {|message|
-        d.filter(message, @time)
+        d.feed(@time, message)
       }
     }
-    filtered = d.filtered_as_array
-    filtered.map {|m| m[2] }
+    d.filtered_records
   end
 
   def test_configure
@@ -328,5 +327,4 @@ class ExtractQueryParamsFilterTest < Test::Unit::TestCase
     filtered = filter(config, [record])
     assert_equal(expected, filtered[0])
   end
-end
 end
