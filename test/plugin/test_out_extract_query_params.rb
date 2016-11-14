@@ -40,7 +40,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_tag_prefix extracted.
     ])
 
-    tag    = 'test'
     record = {
       'url' => URL,
     }
@@ -59,7 +58,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_tag_prefix extracted.
     ])
 
-    tag    = 'test'
     record = {
       'url' => URL,
     }
@@ -81,7 +79,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       only           foo, baz
     ])
 
-    tag    = 'test'
     record = { 'url' => URL }
     d.instance.filter_record('test', Time.now, record)
 
@@ -98,7 +95,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       except         baz, モリス
     ])
 
-    tag    = 'test'
     record = { 'url' => URL }
     d.instance.filter_record('test', Time.now, record)
 
@@ -115,7 +111,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       discard_key true
     ])
 
-    tag    = 'test'
     record = { 'url' => URL }
     d.instance.filter_record('test', Time.now, record)
 
@@ -368,7 +363,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_url_port true
       add_url_path true
     ])
-    tag    = 'test'
     record = {
       'url' => URL,
     }
@@ -396,7 +390,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_url_path true
     ])
 
-    tag    = 'test'
     record = {
       'url' => URL,
     }
@@ -425,7 +418,6 @@ class ExtractQueryParamsOutputTest < Test::Unit::TestCase
       add_url_port true
       add_url_path true
     ])
-    tag    = 'test'
     record = {
       'url' => QUERY_ONLY,
     }
