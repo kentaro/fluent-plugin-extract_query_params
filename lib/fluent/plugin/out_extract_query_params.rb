@@ -36,6 +36,10 @@ module Fluent::Plugin
       @extractor = Fluent::Plugin::QueryParamsExtractor.new(self, conf)
     end
 
+    def multi_workers_ready?
+      true
+    end
+
     def filter_record(tag, time, record)
       record = @extractor.add_query_params_field(record)
       super(tag, time, record)
