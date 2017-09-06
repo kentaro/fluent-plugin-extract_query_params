@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = 'fluent-plugin-extract_query_params'
-  gem.version       = '0.1.0'
+  gem.version       = '0.1.1'
   gem.authors       = ['Kentaro Kuribayashi']
   gem.email         = ['kentarok@gmail.com']
   gem.homepage      = 'http://github.com/kentaro/fluent-plugin-extract_query_params'
