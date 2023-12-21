@@ -26,7 +26,7 @@ Imagin you have a config as below:
 
   key            url
   only           foo, baz
-</match>
+</filter>
 ```
 
 And you feed such a value into fluentd:
@@ -40,7 +40,7 @@ And you feed such a value into fluentd:
 Then you'll get re-emmited tag/record-s below:
 
 ```
-"extracted.test" => {
+"test" => {
   "url" => "http://example.com/?foo=bar&baz=qux&hoge=fuga"
   "foo" => "bar",
   "baz" => "qux"
